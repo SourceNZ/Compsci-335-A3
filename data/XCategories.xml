@@ -1,0 +1,47 @@
+<Categories>
+  <Category>
+    <CategoryID>1</CategoryID>
+    <CategoryName>Beverages</CategoryName>
+    <Description>Soft drinks, coffees, teas, beers, and ales</Description>
+  </Category>
+  <Category>
+    <CategoryID>2</CategoryID>
+    <CategoryName>Condiments</CategoryName>
+    <Description>Sweet and savory sauces, relishes, spreads, and seasonings</Description>
+  </Category>
+  <Category>
+    <CategoryID>3</CategoryID>
+    <CategoryName>Confections</CategoryName>
+    <Description>Desserts, candies, and sweet breads</Description>
+  </Category>
+  <Category>
+    <CategoryID>4</CategoryID>
+    <CategoryName>Dairy Products</CategoryName>
+    <Description>Cheeses</Description>
+  </Category>
+  <Category>
+    <CategoryID>5</CategoryID>
+    <CategoryName>Grains/Cereals</CategoryName>
+    <Description>Breads, crackers, pasta, and cereal</Description>
+  </Category>
+  <Category>
+    <CategoryID>6</CategoryID>
+    <CategoryName>Meat/Poultry</CategoryName>
+    <Description>Prepared meats</Description>
+  </Category>
+  <Category>
+    <CategoryID>7</CategoryID>
+    <CategoryName>Produce</CategoryName>
+    <Description>Dried fruit and bean curd</Description>
+  </Category>
+  <Category>
+    <CategoryID>8</CategoryID>
+    <CategoryName>Seafood</CategoryName>
+    <Description>Seaweed and fish</Description>
+  </Category>
+  <Category>
+    <CategoryID>30</CategoryID>
+    <CategoryName>Biscuits</CategoryName>
+    <Description>Tasty, tasty biscuits!!</Description>
+  </Category>
+</Categories>
