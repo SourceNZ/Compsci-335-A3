@@ -28,7 +28,7 @@ namespace WebApplication1
         public int CategoryID { get; set; }
         public string CategoryName { get; set; }
         public string Description { get; set; }
-        public IEnumerable<Product> MyProducts { get; set; }
+        public IEnumerable<Product> Products { get; set; }
 
     }
     [DataServiceKey("SupplierID")]
@@ -38,7 +38,7 @@ namespace WebApplication1
         public string CompanyName { get; set; }
         public string ContactName { get; set; }
         public string Country { get; set; }
-        public IEnumerable<Product> MyProducts { get; set; }
+        public IEnumerable<Product> Products { get; set; }
     }
     [DataServiceKey("ProductID")]
     public class Product
@@ -50,8 +50,8 @@ namespace WebApplication1
         public decimal? UnitPrice { get; set; }
         public Int16? UnitsInStock { get; set; }
         public Int16? UnitsOnOrder { get; set; }
-        public Supplier MySupplier { get; set; }
-        public Category MyCategory { get; set; }
+        public Supplier Supplier { get; set; }
+        public Category Category { get; set; }
 
     }
     //CategoryID = null or SupplierID = null or UnitPrice = null or UnitsInStock = null or UnitsOnOrder = null
@@ -124,15 +124,15 @@ namespace WebApplication1
             var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
             var _suppliers_dict = _MySuppliers.ToDictionary(c => (int?)c.SupplierID);
 
-            foreach (var o in _MyProducts) o.MySupplier = _suppliers_dict[o.SupplierID];
-            foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[(int?)c.SupplierID];
+            foreach (var o in _MyProducts) o.Supplier = _suppliers_dict[o.SupplierID];
+            foreach (var c in _MySuppliers) c.Products = _product_supplier_lookup[(int?)c.SupplierID];
 
             //Linking products categoryID to categories CategoryID
             var _product_lookup = _MyProducts.ToLookup(o => o.CategoryID);
             var _categories_dict = _MyCategories.ToDictionary(c => (int?)c.CategoryID);
 
-            foreach (var o in _MyProducts) o.MyCategory = _categories_dict[o.CategoryID];
-            foreach (var c in _MyCategories) c.MyProducts = _product_lookup[(int?)c.CategoryID];
+            foreach (var o in _MyProducts) o.Category = _categories_dict[o.CategoryID];
+            foreach (var c in _MyCategories) c.Products = _product_lookup[(int?)c.CategoryID];
 
 
 
