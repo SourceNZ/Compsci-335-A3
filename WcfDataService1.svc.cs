@@ -28,7 +28,6 @@ namespace WebApplication1
         public Int32 CategoryID { get; set; }
         public string CategoryName { get; set; }
         public string Description { get; set; }
-        public int Picture { get; set; }
         public IEnumerable<Product> MyProducts { get; set; }
 
     }
@@ -38,15 +37,7 @@ namespace WebApplication1
         public Int32 SupplierID { get; set; }
         public string CompanyName { get; set; }
         public string ContactName { get; set; }
-        public string ContactTitle { get; set; }
-        public string Address { get; set; }
-        public string City { get; set; }
-        public string Region { get; set; }
-        public string PostalCode { get; set; }
         public string Country { get; set; }
-        public string Phone { get; set; }
-        public string Fax { get; set; }
-        public string Homepage { get; set; }
         public IEnumerable<Product> MyProducts { get; set; }
     }
     [DataServiceKey("ProductID")]
@@ -56,71 +47,60 @@ namespace WebApplication1
         public string ProductName { get; set; }
         public Int32? SupplierID { get; set; }
         public Int32 CategoryID { get; set; }
-        public string QuantityPerUnit { get; set; }
         public int? UnitPrice { get; set; }
         public Int16? UnitsInStock { get; set; }
         public Int16? UnitsOnOrder { get; set; }
-        public Int16? ReOrderLevel { get; set; }
-        public bool Discontinued { get; set; }
         public Supplier MySuppliers { get; set; }
         public Category MyCategories { get; set; }
+
+
     }
     public class MyDataSource
     {
         static string FOLDER =  @".\data\"; // HttpContext.Current.Server.MapPath("/data"); //@"C:\usertmp\"; //
-
+        
+            
         static MyDataSource()
         {
             Console.WriteLine($"... loading {FOLDER}\\XCategories.xml");
             _MyCategories =
                 XElement.Load(FOLDER + @"\XCategories.xml")
-                .Elements("Categories")
+                .Elements("Category")
                 .Select(x => new Category
                 {
                     CategoryID = (Int32)x.Element("CategoryID"),
                     CategoryName = (string)x.Element("CategoryName"),
                     Description = (string)x.Element("Description"),
-                    Picture = (int)x.Element("Picture"),
 
                 }).ToArray();
 
             Console.WriteLine($"... loading {FOLDER}\\XSuppliers.xml");
             _MySuppliers =
                XElement.Load(FOLDER + @"\XSuppliers.xml")
-               .Elements("MySuppliers")
+               .Elements("Supplier")
                .Select(x => new Supplier
                {
                    SupplierID = (Int32)x.Element("SupplierID"),
                    CompanyName = (string)x.Element("CompanyName"),
                    ContactName = (string)x.Element("ContactName"),
-                   ContactTitle = (string)x.Element("ContactTitle"),
-                   Address = (string)x.Element("Address"),
-                   City = (string)x.Element("City"),
-                   Region = (string)x.Element("Region"),
-                   PostalCode = (string)x.Element("PostalCode"),
                    Country = (string)x.Element("Country"),
-                   Phone = (string)x.Element("Phone"),
-                   Fax = (string)x.Element("Fax"),
-                   Homepage = (string)x.Element("Homepage"),
-                  
+
                }).ToArray();
 
             Console.WriteLine($"... loading {FOLDER}\\XProducts.xml");
             _MyProducts =
                XElement.Load(FOLDER + @"\XProducts.xml")
-               .Elements("MyProducts")
+               .Elements("Products")
                .Select(x => new Product
                {
                    ProductID = (Int32)x.Element("ProductID"),
                    ProductName = (string)x.Element("ProductName"),
                    SupplierID = (Int32?)x.Element("SupplierID"),
                    CategoryID = (Int32)x.Element("CategoryID"),
-                   QuantityPerUnit = (string)x.Element("QuantityPerUnit"),
                    UnitPrice = (int?)x.Element("UnitPrice"),
                    UnitsInStock = (Int16?)x.Element("UnitsInStock"),
                    UnitsOnOrder = (Int16?)x.Element("UnitsOnOrder"),
-                   ReOrderLevel = (Int16?)x.Element("ReOrderLevel"),
-                   Discontinued = (bool)x.Element("Discontinued"),
+                   
                }).ToArray();
 
             Console.WriteLine($"... relating _Categories, _Products and _Suppliers");
@@ -131,9 +111,9 @@ namespace WebApplication1
             foreach (var o in _MyProducts) o.MyCategories = _categories_dict[o.CategoryID];
             foreach (var c in _MyCategories) c.MyProducts = _product_lookup[c.CategoryID];
 
-         
+
             Console.WriteLine($"... starting");
-          
+
         }
         static IEnumerable<Category> _MyCategories;
         static IEnumerable<Product> _MyProducts;
