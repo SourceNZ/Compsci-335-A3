@@ -25,7 +25,7 @@ namespace WebApplication1
     [DataServiceKey("CategoryID")]
     public class Category
     {
-        public Int32 CategoryID { get; set; }
+        public int CategoryID { get; set; }
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public IEnumerable<Product> MyProducts { get; set; }
@@ -34,7 +34,7 @@ namespace WebApplication1
     [DataServiceKey("SupplierID")]
     public class Supplier
     {
-        public Int32 SupplierID { get; set; }
+        public int SupplierID { get; set; }
         public string CompanyName { get; set; }
         public string ContactName { get; set; }
         public string Country { get; set; }
@@ -43,10 +43,10 @@ namespace WebApplication1
     [DataServiceKey("ProductID")]
     public class Product
     {
-        public Int32 ProductID { get; set; }
+        public int ProductID { get; set; }
         public string ProductName { get; set; }
-        public Int32 SupplierID { get; set; }
-        public Int32 CategoryID { get; set; }
+        public int? SupplierID { get; set; }
+        public int? CategoryID { get; set; }
         public decimal? UnitPrice { get; set; }
         public Int16? UnitsInStock { get; set; }
         public Int16? UnitsOnOrder { get; set; }
@@ -54,14 +54,15 @@ namespace WebApplication1
         public Category MyCategory { get; set; }
 
     }
-     // <ProductID>1</ProductID>
-   // <ProductName>Chai!</ProductName>
-   // <SupplierID>1</SupplierID>
+    //CategoryID = null or SupplierID = null or UnitPrice = null or UnitsInStock = null or UnitsOnOrder = null
+    // <ProductID>1</ProductID>
+    // <ProductName>Chai!</ProductName>
+    // <SupplierID>1</SupplierID>
     //<CategoryID>1</CategoryID>
-   // <UnitPrice>18.0000</UnitPrice>
-   // <UnitsInStock>39</UnitsInStock>
-   // <UnitsOnOrder>0</UnitsOnOrder>
-        
+    // <UnitPrice>18.0000</UnitPrice>
+    // <UnitsInStock>39</UnitsInStock>
+    // <UnitsOnOrder>0</UnitsOnOrder>
+
     public class MyDataSource
     {
         static string FOLDER =  @".\data\"; // HttpContext.Current.Server.MapPath("/data"); //@"C:\usertmp\"; //
@@ -77,7 +78,7 @@ namespace WebApplication1
                 .Elements("Category")
                 .Select(x => new Category
                 {
-                    CategoryID = (Int32)x.Element("CategoryID"),
+                    CategoryID = (int)x.Element("CategoryID"),
                     CategoryName = (string)x.Element("CategoryName"),
                     Description = (string)x.Element("Description"),
 
@@ -89,7 +90,7 @@ namespace WebApplication1
                .Elements("Supplier")
                .Select(x => new Supplier
                {
-                   SupplierID = (Int32)x.Element("SupplierID"),
+                   SupplierID = (int)x.Element("SupplierID"),
                    CompanyName = (string)x.Element("CompanyName"),
                    ContactName = (string)x.Element("ContactName"),
                    Country = (string)x.Element("Country"),
@@ -102,13 +103,13 @@ namespace WebApplication1
                .Elements("Product")//this should be Product ( if i get server error 500 then change this
                .Select(x => new Product
                {
-                   ProductID = (Int32)x.Element("ProductID"),
+                   ProductID = (int)x.Element("ProductID"),
                    ProductName = (string)x.Element("ProductName"),
-                   SupplierID = (Int32)x.Element("SupplierID"),
-                   CategoryID = (Int32)x.Element("CategoryID"),
-                   UnitPrice = (decimal?)x.Element("UnitPrice"),
-                   UnitsInStock = (Int16?)x.Element("UnitsInStock"),
-                   UnitsOnOrder = (Int16?)x.Element("UnitsOnOrder"),
+                   SupplierID = string.IsNullOrEmpty((string)x.Element("SupplierID")) ? null : (int?)x.Element("SupplierID"),
+                   CategoryID = string.IsNullOrEmpty((string)x.Element("CategoryID")) ? null : (int?)x.Element("CategoryID"),
+                   UnitPrice = string.IsNullOrEmpty((string)x.Element("UnitPrice")) ? null : (decimal?)x.Element("UnitPrice"),
+                   UnitsInStock = string.IsNullOrEmpty((string)x.Element("UnitsInStock")) ? null : (Int16?)x.Element("UnitsInStock"),
+                   UnitsOnOrder = string.IsNullOrEmpty((string)x.Element("UnitsOnOrder")) ? null : (Int16?)x.Element("UnitsOnOrder"),
 
                }).ToArray();
 
@@ -121,17 +122,17 @@ namespace WebApplication1
             // public IEnumerable<Product> MyProducts { get; set; }
 
             var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
-            var _suppliers_dict = _MySuppliers.ToDictionary(c => c.SupplierID);
+            var _suppliers_dict = _MySuppliers.ToDictionary(c => (int?)c.SupplierID);
 
             foreach (var o in _MyProducts) o.MySupplier = _suppliers_dict[o.SupplierID];
-            foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[c.SupplierID];
+            foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[(int?)c.SupplierID];
 
             //Linking products categoryID to categories CategoryID
             var _product_lookup = _MyProducts.ToLookup(o => o.CategoryID);
-            var _categories_dict = _MyCategories.ToDictionary(c => c.CategoryID);
+            var _categories_dict = _MyCategories.ToDictionary(c => (int?)c.CategoryID);
 
             foreach (var o in _MyProducts) o.MyCategory = _categories_dict[o.CategoryID];
-            foreach (var c in _MyCategories) c.MyProducts = _product_lookup[c.CategoryID];
+            foreach (var c in _MyCategories) c.MyProducts = _product_lookup[(int?)c.CategoryID];
 
 
 
