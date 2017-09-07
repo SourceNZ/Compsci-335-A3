@@ -45,21 +45,22 @@ namespace WebApplication1
     {
         public Int32 ProductID { get; set; }
         public string ProductName { get; set; }
-        public Int32? SupplierID { get; set; }
+        public Int32 SupplierID { get; set; }
         public Int32 CategoryID { get; set; }
         public int? UnitPrice { get; set; }
         public Int16? UnitsInStock { get; set; }
         public Int16? UnitsOnOrder { get; set; }
-        public Supplier MySuppliers { get; set; }
-        public Category MyCategories { get; set; }
-
+        public Supplier MySupplier { get; set; }
+        public Category MyCategory { get; set; }
 
     }
     public class MyDataSource
     {
         static string FOLDER =  @".\data\"; // HttpContext.Current.Server.MapPath("/data"); //@"C:\usertmp\"; //
-        
-            
+        static IEnumerable<Category> _MyCategories;
+        static IEnumerable<Product> _MyProducts;
+        static IEnumerable<Supplier> _MySuppliers;
+
         static MyDataSource()
         {
             Console.WriteLine($"... loading {FOLDER}\\XCategories.xml");
@@ -90,34 +91,40 @@ namespace WebApplication1
             Console.WriteLine($"... loading {FOLDER}\\XProducts.xml");
             _MyProducts =
                XElement.Load(FOLDER + @"\XProducts.xml")
-               .Elements("Products")
+               .Elements("Products")//this should be Product
                .Select(x => new Product
                {
                    ProductID = (Int32)x.Element("ProductID"),
                    ProductName = (string)x.Element("ProductName"),
-                   SupplierID = (Int32?)x.Element("SupplierID"),
+                   SupplierID = (Int32)x.Element("SupplierID"),
                    CategoryID = (Int32)x.Element("CategoryID"),
                    UnitPrice = (int?)x.Element("UnitPrice"),
                    UnitsInStock = (Int16?)x.Element("UnitsInStock"),
                    UnitsOnOrder = (Int16?)x.Element("UnitsOnOrder"),
-                   
+
                }).ToArray();
 
             Console.WriteLine($"... relating _Categories, _Products and _Suppliers");
 
+            //need to link products: supplier ID to suppliers supplier ID
+            //var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
+            //var _suppliers_dict = _MySuppliers.ToDictionary(c => c.SupplierID);
+
+           // foreach (var o in _MyProducts) o.SupplierID = _suppliers_dict[o.SupplierID];
+            //foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[c.SupplierID];
+
             var _product_lookup = _MyProducts.ToLookup(o => o.CategoryID);
             var _categories_dict = _MyCategories.ToDictionary(c => c.CategoryID);
 
-            foreach (var o in _MyProducts) o.MyCategories = _categories_dict[o.CategoryID];
+            foreach (var o in _MyProducts) o.MyCategory = _categories_dict[o.CategoryID];
             foreach (var c in _MyCategories) c.MyProducts = _product_lookup[c.CategoryID];
+
 
 
             Console.WriteLine($"... starting");
 
         }
-        static IEnumerable<Category> _MyCategories;
-        static IEnumerable<Product> _MyProducts;
-        static IEnumerable<Supplier> _MySuppliers;
+        
 
         public IQueryable<Category> Categories
         {
