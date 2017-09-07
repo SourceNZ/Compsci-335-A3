@@ -47,13 +47,21 @@ namespace WebApplication1
         public string ProductName { get; set; }
         public Int32 SupplierID { get; set; }
         public Int32 CategoryID { get; set; }
-        public int? UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
         public Int16? UnitsInStock { get; set; }
         public Int16? UnitsOnOrder { get; set; }
         public Supplier MySupplier { get; set; }
         public Category MyCategory { get; set; }
 
     }
+     // <ProductID>1</ProductID>
+   // <ProductName>Chai!</ProductName>
+   // <SupplierID>1</SupplierID>
+    //<CategoryID>1</CategoryID>
+   // <UnitPrice>18.0000</UnitPrice>
+   // <UnitsInStock>39</UnitsInStock>
+   // <UnitsOnOrder>0</UnitsOnOrder>
+        
     public class MyDataSource
     {
         static string FOLDER =  @".\data\"; // HttpContext.Current.Server.MapPath("/data"); //@"C:\usertmp\"; //
@@ -91,14 +99,14 @@ namespace WebApplication1
             Console.WriteLine($"... loading {FOLDER}\\XProducts.xml");
             _MyProducts =
                XElement.Load(FOLDER + @"\XProducts.xml")
-               .Elements("Products")//this should be Product
+               .Elements("Product")//this should be Product ( if i get server error 500 then change this
                .Select(x => new Product
                {
                    ProductID = (Int32)x.Element("ProductID"),
                    ProductName = (string)x.Element("ProductName"),
                    SupplierID = (Int32)x.Element("SupplierID"),
                    CategoryID = (Int32)x.Element("CategoryID"),
-                   UnitPrice = (int?)x.Element("UnitPrice"),
+                   UnitPrice = (decimal?)x.Element("UnitPrice"),
                    UnitsInStock = (Int16?)x.Element("UnitsInStock"),
                    UnitsOnOrder = (Int16?)x.Element("UnitsOnOrder"),
 
@@ -106,13 +114,19 @@ namespace WebApplication1
 
             Console.WriteLine($"... relating _Categories, _Products and _Suppliers");
 
-            //need to link products: supplier ID to suppliers supplier ID
-            //var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
-            //var _suppliers_dict = _MySuppliers.ToDictionary(c => c.SupplierID);
+            //need to link products: supplier ID to suppliers supplierID
+            // public Supplier MySupplier { get; set; }
+            // public Category MyCategory { get; set; }
+            // Supplier:
+            // public IEnumerable<Product> MyProducts { get; set; }
 
-           // foreach (var o in _MyProducts) o.SupplierID = _suppliers_dict[o.SupplierID];
-            //foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[c.SupplierID];
+            var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
+            var _suppliers_dict = _MySuppliers.ToDictionary(c => c.SupplierID);
 
+            foreach (var o in _MyProducts) o.MySupplier = _suppliers_dict[o.SupplierID];
+            foreach (var c in _MySuppliers) c.MyProducts = _product_supplier_lookup[c.SupplierID];
+
+            //Linking products categoryID to categories CategoryID
             var _product_lookup = _MyProducts.ToLookup(o => o.CategoryID);
             var _categories_dict = _MyCategories.ToDictionary(c => c.CategoryID);
 
