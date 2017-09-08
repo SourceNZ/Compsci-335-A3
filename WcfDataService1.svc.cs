@@ -54,26 +54,18 @@ namespace WebApplication1
         public Category Category { get; set; }
 
     }
-    //CategoryID = null or SupplierID = null or UnitPrice = null or UnitsInStock = null or UnitsOnOrder = null
-    // <ProductID>1</ProductID>
-    // <ProductName>Chai!</ProductName>
-    // <SupplierID>1</SupplierID>
-    //<CategoryID>1</CategoryID>
-    // <UnitPrice>18.0000</UnitPrice>
-    // <UnitsInStock>39</UnitsInStock>
-    // <UnitsOnOrder>0</UnitsOnOrder>
 
     public class MyDataSource
     {
         static string FOLDER =  @".\data\"; // HttpContext.Current.Server.MapPath("/data"); //@"C:\usertmp\"; //
-        static IEnumerable<Category> _MyCategories;
-        static IEnumerable<Product> _MyProducts;
-        static IEnumerable<Supplier> _MySuppliers;
+        static IEnumerable<Category> _Categories;
+        static IEnumerable<Product> _Products;
+        static IEnumerable<Supplier> _Suppliers;
 
         static MyDataSource()
         {
             Console.WriteLine($"... loading {FOLDER}\\XCategories.xml");
-            _MyCategories =
+            _Categories =
                 XElement.Load(FOLDER + @"\XCategories.xml")
                 .Elements("Category")
                 .Select(x => new Category
@@ -85,7 +77,7 @@ namespace WebApplication1
                 }).ToArray();
 
             Console.WriteLine($"... loading {FOLDER}\\XSuppliers.xml");
-            _MySuppliers =
+            _Suppliers =
                XElement.Load(FOLDER + @"\XSuppliers.xml")
                .Elements("Supplier")
                .Select(x => new Supplier
@@ -98,43 +90,38 @@ namespace WebApplication1
                }).ToArray();
 
             Console.WriteLine($"... loading {FOLDER}\\XProducts.xml");
-            _MyProducts =
+            _Products =
                XElement.Load(FOLDER + @"\XProducts.xml")
-               .Elements("Product")//this should be Product ( if i get server error 500 then change this
+               .Elements("Product")
                .Select(x => new Product
                {
                    ProductID = (int)x.Element("ProductID"),
                    ProductName = (string)x.Element("ProductName"),
-                   SupplierID = string.IsNullOrEmpty((string)x.Element("SupplierID")) ? null : (int?)x.Element("SupplierID"),
-                   CategoryID = string.IsNullOrEmpty((string)x.Element("CategoryID")) ? null : (int?)x.Element("CategoryID"),
-                   UnitPrice = string.IsNullOrEmpty((string)x.Element("UnitPrice")) ? null : (decimal?)x.Element("UnitPrice"),
-                   UnitsInStock = string.IsNullOrEmpty((string)x.Element("UnitsInStock")) ? null : (Int16?)x.Element("UnitsInStock"),
-                   UnitsOnOrder = string.IsNullOrEmpty((string)x.Element("UnitsOnOrder")) ? null : (Int16?)x.Element("UnitsOnOrder"),
+                   SupplierID = string.IsNullOrEmpty((string)x.Element("SupplierID")) ? (int?)null : (int?)x.Element("SupplierID"),
+                   CategoryID = string.IsNullOrEmpty((string)x.Element("CategoryID")) ? (int?)null : (int?)x.Element("CategoryID"),
+                   UnitPrice = string.IsNullOrEmpty((string)x.Element("UnitPrice")) ? (decimal?)null : (decimal)x.Element("UnitPrice"),
+                   UnitsInStock = string.IsNullOrEmpty((string)x.Element("UnitsInStock")) ? (Int16?)null : (Int16)x.Element("UnitsInStock"),
+                   UnitsOnOrder = string.IsNullOrEmpty((string)x.Element("UnitsOnOrder")) ? (Int16?)null : (Int16)x.Element("UnitsOnOrder"),
 
                }).ToArray();
 
             Console.WriteLine($"... relating _Categories, _Products and _Suppliers");
 
-            //need to link products: supplier ID to suppliers supplierID
-            // public Supplier MySupplier { get; set; }
-            // public Category MyCategory { get; set; }
-            // Supplier:
-            // public IEnumerable<Product> MyProducts { get; set; }
 
-            var _product_supplier_lookup = _MyProducts.ToLookup(o => o.SupplierID);
-            var _suppliers_dict = _MySuppliers.ToDictionary(c => (int?)c.SupplierID);
+            
+            var _product_supplier_lookup = _Products.Where(p => p.SupplierID.HasValue).ToLookup(o => o.SupplierID);
+            var _suppliers_dict = _Suppliers.ToDictionary(c => c.SupplierID);
 
-            foreach (var o in _MyProducts) o.Supplier = _suppliers_dict[o.SupplierID];
-            foreach (var c in _MySuppliers) c.Products = _product_supplier_lookup[(int?)c.SupplierID];
+            foreach (var o in _Products) if (o.SupplierID.HasValue) o.Supplier = _suppliers_dict[(int)o.SupplierID];
 
-            //Linking products categoryID to categories CategoryID
-            var _product_lookup = _MyProducts.ToLookup(o => o.CategoryID);
-            var _categories_dict = _MyCategories.ToDictionary(c => (int?)c.CategoryID);
+            foreach (var c in _Suppliers)  c.Products = _product_supplier_lookup[c.SupplierID];
 
-            foreach (var o in _MyProducts) o.Category = _categories_dict[o.CategoryID];
-            foreach (var c in _MyCategories) c.Products = _product_lookup[(int?)c.CategoryID];
+            var _product_lookup = _Products.Where(p => p.CategoryID.HasValue).ToLookup(o => o.CategoryID);
+            var _categories_dict = _Categories.ToDictionary(c => c.CategoryID);
 
+            foreach (var o in _Products) if (o.CategoryID.HasValue) o.Category = _categories_dict[(int)o.CategoryID]; //////
 
+            foreach (var c in _Categories) c.Products = _product_lookup[c.CategoryID];
 
             Console.WriteLine($"... starting");
 
@@ -146,7 +133,7 @@ namespace WebApplication1
             get
             {
                 Console.WriteLine($"... returning MyCategories");
-                return _MyCategories.AsQueryable();
+                return _Categories.AsQueryable();
             }
         }
         public IQueryable<Product> Products
@@ -154,7 +141,7 @@ namespace WebApplication1
             get
             {
                 Console.WriteLine($"... returning MyProducts");
-                return _MyProducts.AsQueryable();
+                return _Products.AsQueryable();
             }
         }
         public IQueryable<Supplier> Suppliers
@@ -162,7 +149,7 @@ namespace WebApplication1
             get
             {
                 Console.WriteLine($"... returning MySuppliers");
-                return _MySuppliers.AsQueryable();
+                return _Suppliers.AsQueryable();
             }
         }
         

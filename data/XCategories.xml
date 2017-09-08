@@ -39,6 +39,11 @@
     <CategoryName>Seafood</CategoryName>
     <Description>Seaweed and fish</Description>
   </Category>
+<Category>
+    <CategoryID>9</CategoryID>
+    <CategoryName>SDSDSDS</CategoryName>
+    <Description>SSSSSSSSSSS</Description>
+  </Category>
   <Category>
     <CategoryID>30</CategoryID>
     <CategoryName>Biscuits</CategoryName>

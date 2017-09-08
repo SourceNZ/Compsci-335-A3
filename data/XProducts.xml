@@ -1,20 +1,20 @@
-<Products>
+﻿<Products>
   <Product>
     <ProductID>1</ProductID>
     <ProductName>Chai!</ProductName>
-    <SupplierID>1</SupplierID>
-    <CategoryID>1</CategoryID>
+    <SupplierID></SupplierID>
+    <CategoryID></CategoryID>
     <UnitPrice>18.0000</UnitPrice>
-    <UnitsInStock>39</UnitsInStock>
-    <UnitsOnOrder>0</UnitsOnOrder>
+    <UnitsInStock></UnitsInStock>
+    <UnitsOnOrder></UnitsOnOrder>
   </Product>
   <Product>
     <ProductID>2</ProductID>
     <ProductName>Chang</ProductName>
     <SupplierID>29</SupplierID>
-    <CategoryID>1</CategoryID>
+    <CategoryID></CategoryID>
     <UnitPrice>19.0000</UnitPrice>
-    <UnitsInStock>175</UnitsInStock>
+    <UnitsInStock></UnitsInStock>
     <UnitsOnOrder>40</UnitsOnOrder>
   </Product>
   <Product>
@@ -29,7 +29,7 @@
   <Product>
     <ProductID>4</ProductID>
     <ProductName>Chef Anton's Cajun Seasoning</ProductName>
-    <SupplierID>2</SupplierID>
+    <SupplierID></SupplierID>
     <CategoryID>2</CategoryID>
     <UnitPrice>22.0000</UnitPrice>
     <UnitsInStock>53</UnitsInStock>
